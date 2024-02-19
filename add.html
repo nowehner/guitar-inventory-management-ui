@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Guitar - Inventory Management</title>
+    <link rel="stylesheet" href="add.css">
+    <script src="scripts.js"></script> 
+</head>
+<body>
+
+<div id="navbar">
+    <a href="index.html">Home</a>
+    <a href="about.html">About</a>
+    <a href="add.html">Add</a>
+    <a href="search.html">Search</a>
+</div>
+
+
+<div id="content">
+    <h2>Add Guitar</h2>
+    <form onsubmit="addGuitar(); return false;">
+        Serial Number: <input type="text" id="serialNumber"><br>
+        Price: <input type="text" id="price"><br>
+        Builder: <input type="text" id="builder"><br>
+        Model: <input type="text" id="model"><br>
+        Top Wood: <input type="text" id="topWood"><br>
+        Back Wood: <input type="text" id="backWood"><br>
+        Type: <input type="text" id="type"><br>
+        <button type="submit">Add Guitar</button>
+    </form>
+    <div class="popup" id="popup">
+        <span onclick="closePopup()">&times;</span>
+        <p id="popupMessage"></p>
+    </div>
+</div>
+
+</body>
+</html>
