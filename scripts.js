@@ -1,5 +1,4 @@
 async function addGuitar() {
-    let message = "";
     let serialNumber = document.getElementById("serialNumber").value;
     let price = document.getElementById("price").value;
     let builder = document.getElementById("builder").value;
@@ -8,6 +7,13 @@ async function addGuitar() {
     let backWood = document.getElementById("backWood").value;
     let type = document.getElementById("type").value;
 
+    
+    if (!serialNumber || !price || !builder || !model || !topWood || !backWood || !type) {
+        alert('Please enter a value for all fields.');
+        return;
+    }
+
+    
     let guitar = {
         serialNumber: serialNumber,
         price: price,
@@ -18,16 +24,38 @@ async function addGuitar() {
         type: type
     };
 
-    alert("You entered: " + JSON.stringify(guitar));
+    try {
+        let response = await fetch('backend_api_url', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(guitar),
+        });
 
-    let guitarImageNode = document.getElementById("guitarImage");
-    alert("The image: " +
-        guitarImageNode.files[0].name +
-        ", size = " +
-        guitarImageNode.files[0].size);
+        let result = await response.json();
 
- 
-    alert("Guitar data and image submitted successfully!");
+        if (result.success) {
+            displayPopup('The guitar was added to the system');
+        } else {
+            displayPopup('Something went wrong. Please try again or contact the customer support team.');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        displayPopup('Something went wrong. Please try again or contact the customer support team.');
+    }
+}
+
+function displayPopup(message) {
+    const popup = document.getElementById('popup');
+    const popupMessage = document.getElementById('popupMessage');
+    popupMessage.innerText = message;
+    popup.style.display = 'block';
+}
+
+function closePopup() {
+    const popup = document.getElementById('popup');
+    popup.style.display = 'none';
 }
 
 
@@ -79,68 +107,97 @@ let guitars = [ {
 
 ];
 async function searchGuitars() {
+    
+    var guitarBuilder = document.getElementById('builder').value.toLowerCase();
+    var guitarModel = document.getElementById('model').value.toLowerCase();
+    var guitarType = document.getElementById('type').value.toLowerCase();
+    var guitarBackWood = document.getElementById('backWood').value.toLowerCase();
+    var guitarTopWood = document.getElementById('topWood').value.toLowerCase();
+    
+    
+    let searchCriteria = {
+        builder: guitarBuilder,
+        model: guitarModel,
+        type: guitarType,
+        backWood: guitarBackWood,
+        topWood: guitarTopWood
+    };
+
+    try {
         
-       
-        var guitarBuilder = document.getElementById('builder').value.toLowerCase();
-        var guitarModel = document.getElementById('model').value.toLowerCase();
-        var guitarType = document.getElementById('type').value.toLowerCase();
-        var guitarBackWood = document.getElementById('backWood').value.toLowerCase();
-        var guitarTopWood = document.getElementById('topWood').value.toLowerCase();
-        let table = document.getElementById("result");
-        table.innerHTML = "";
-    
-        for (let guitar of guitars) {
-            if ((!guitarBuilder || guitar.builder.toLowerCase() == guitarBuilder) && 
-                (!guitarModel || guitar.model.toLowerCase() == guitarModel) && 
-                  (!guitarType || guitar.type.toLowerCase() == guitarType) && 
-                  (!guitarBackWood || guitar.backWood.toLowerCase() == guitarBackWood) &&
-                  (!guitarTopWood || guitar.topWood.toLowerCase() == guitarTopWood)
-                  ) {
-                let row = document.createElement("tr");
-    
-               
-                let cell1 = document.createElement("td");
-                let cell2 = document.createElement("td");
-                let cell3 = document.createElement("td");
-                let cell4 = document.createElement("td");
-                let cell5 = document.createElement("td");
-                let cell6 = document.createElement("td");
-                let cell7 = document.createElement("td");
-               
-    
-    
-                let builder = document.createTextNode(guitar.builder);
-                let model = document.createTextNode(guitar.model);
-                let type = document.createTextNode(guitar.type);
-                let backWood = document.createTextNode(guitar.backWood);
-                let topWood = document.createTextNode(guitar.topWood);
-                let serialNumber = document.createTextNode(guitar.serialNumber);
-                let price = document.createTextNode(guitar.price);
-                
-    
-    
-                cell1.appendChild(builder);
-                cell2.appendChild(model);
-                cell3.appendChild(type);
-                cell4.appendChild(backWood);
-                cell5.appendChild(topWood);
-                cell6.appendChild(serialNumber);
-                cell7.appendChild(price);
-                
-                
-    
-                row.appendChild(cell1);
-                row.appendChild(cell2);
-                row.appendChild(cell3);
-                row.appendChild(cell4);
-                row.appendChild(cell5);
-                row.appendChild(cell6);
-                row.appendChild(cell7);
-                table.appendChild(row);
-            }
+        let response = await fetch('your_backend_search_api_url', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(searchCriteria),
+        });
+
+        let result = await response.json();
+
+        
+        if (result.success) {
+            displaySearchResult(result.guitars);
+        } else {
+            displayPopup('Something went wrong. Please try again or contact the customer support team.');
         }
+    } catch (error) {
+        console.error('Error:', error);
+        displayPopup('Something went wrong. Please try again or contact the customer support team.');
+    }
 }
-    
 
+function displaySearchResult(guitars) {
+    let table = document.getElementById("result");
+    table.innerHTML = "";
 
+    for (let guitar of guitars) {
+        let row = document.createElement("tr");
 
+        let cell1 = document.createElement("td");
+        let cell2 = document.createElement("td");
+        let cell3 = document.createElement("td");
+        let cell4 = document.createElement("td");
+        let cell5 = document.createElement("td");
+        let cell6 = document.createElement("td");
+        let cell7 = document.createElement("td");
+
+        let builder = document.createTextNode(guitar.builder);
+        let model = document.createTextNode(guitar.model);
+        let type = document.createTextNode(guitar.type);
+        let backWood = document.createTextNode(guitar.backWood);
+        let topWood = document.createTextNode(guitar.topWood);
+        let serialNumber = document.createTextNode(guitar.serialNumber);
+        let price = document.createTextNode(guitar.price);
+
+        cell1.appendChild(builder);
+        cell2.appendChild(model);
+        cell3.appendChild(type);
+        cell4.appendChild(backWood);
+        cell5.appendChild(topWood);
+        cell6.appendChild(serialNumber);
+        cell7.appendChild(price);
+
+        row.appendChild(cell1);
+        row.appendChild(cell2);
+        row.appendChild(cell3);
+        row.appendChild(cell4);
+        row.appendChild(cell5);
+        row.appendChild(cell6);
+        row.appendChild(cell7);
+
+        table.appendChild(row);
+    }
+}
+
+function displayPopup(message) {
+    const popup = document.getElementById('popup');
+    const popupMessage = document.getElementById('popupMessage');
+    popupMessage.innerText = message;
+    popup.style.display = 'block';
+}
+
+function closePopup() {
+    const popup = document.getElementById('popup');
+    popup.style.display = 'none';
+}
